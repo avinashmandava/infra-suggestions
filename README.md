@@ -12,7 +12,7 @@ Put this all in an interface and go.
 
 # Requirements
 
-You need an ENV file with the following:
+You need a .env file with the following:
 
 OPENAI_KEY=<yours here>
 DATADOG_URL="https://api.datadoghq.com/api/" <-- Just an example to illustrate where to stop the URL (at api/), use your own URL.
