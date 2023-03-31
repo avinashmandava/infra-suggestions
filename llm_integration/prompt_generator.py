@@ -1,11 +1,11 @@
 from langchain import PromptTemplate
 
-def construct_prompt(technology, optimization_goal, metric_data):
+def construct_prompt(technology, goal, metric_data):
 
   template = """
   I want you to act as a consultant for a company that is running {technology}.
 
-  They have asked you to help them {optimization_goal}.
+  They have asked you to help them {goal}.
 
   They have provided you with some metrics representing behavior of the system, which you can use to help you make recommendations.
 
@@ -26,13 +26,13 @@ def construct_prompt(technology, optimization_goal, metric_data):
   """
 
   prompt_template = PromptTemplate(
-      input_variables=["technology", "optimization_goal", "metric_data"],
+      input_variables=["technology", "goal", "metric_data"],
       template=template,
   )
 
   final_prompt = prompt_template.format(
     technology=technology,
-    optimization_goal=optimization_goal,
+    goal=goal,
     metric_data=metric_data
   )
 
