@@ -1,91 +1,20 @@
-# NOTES
+# What is this?
 
-Experiment to find useful recommendations from GPT applied to something I understand so I can evaluate it.
-
-Application that makes sense for me is:
-- Integrate with some external system that holds metrics and logs to pull in info about a target system that you want help with
-- Logic to convert that data about the system to a prompt to send to GPT so we get an ordered list of very specific recommendations along with actions to take for those recommendations.
-- Get a response from GPT containing a list of recommendations including, where possible, a command you can carry out on the system.
-- An avenue for users to provide feedback on which of the recommendations they have either tried before, are not possible, or they need more info on.
-
-Put this all in an interface and go.
-
-# Requirements
-
-You need a .env file with the following:
-
-OPENAI_KEY=<yours here>
-DATADOG_URL="https://api.datadoghq.com/api/" <-- Just an example to illustrate where to stop the URL (at api/), use your own URL.
-DATADOG_API_KEY=<yours here>
-DATADOG_APP_KEY=<yours here>
-
-# GPT Output
-
-## Data Ingestion and Integration
-- Build plugins or adapters for popular monitoring tools like Datadog, Splunk, Prometheus, etc. These plugins will be responsible for sending data to your application.
-- Develop a data ingestion service that accepts data from the plugins and stores it in a scalable and distributed storage system like Apache Kafka or AWS Kinesis.
-- Create a service discovery mechanism or manual configuration to identify and connect to databases, message queues, and other components.
-
-## Data Processing and Analysis
-- Use a stream processing framework like Apache Flink or Apache Beam to process the incoming data.
-- Implement data transformation and enrichment logic to normalize and augment the data before it is processed by the AI.
-- Store processed data in a time-series database like InfluxDB or TimescaleDB for historical analysis.
-
-## AI-powered Recommendation Engine
-- Develop a recommendation engine using GPT or a similar AI model to provide expert advice based on the processed data.
-- Train and fine-tune the AI model with domain-specific knowledge about databases, message queues, and other infrastructure components.
-- Integrate the AI model with your application using a RESTful API or a GraphQL API.
-
-## User Interface and Querying
-- Design a web-based user interface for users to interact with the AI-powered recommendation engine.
-- Implement a natural language processing (NLP) layer to understand and parse user queries, then forward them to the recommendation engine.
-- Display the recommendations and insights provided by the AI model in a user-friendly manner.
-
-## Codebase Organization
-- Organize the codebase into modular and well-defined components, following microservices architecture principles or modular monolith, depending on the team's preference and expertise.
-- Use a version control system like Git and follow best practices for branching, code reviews, and continuous integration and deployment (CI/CD).
-
-## Infrastructure and Deployment
-- Choose a cloud provider like AWS, Azure, or GCP to host the application.
-- Utilize containerization with Docker and orchestration using Kubernetes for deployment and scalability.
-- Implement observability and monitoring using tools like Prometheus and Grafana to track the performance and health of the application.
-
-By following this high-level architecture, you can build a robust application that provides AI-powered expert advice on infrastructure management for software development teams.
+Basic application that quickly gives you suggestions to improve your system performance. Only supported system is Postgres right now. Also this is not fully functional, it's just a proof of concept. More to com
+- You add some API keys to the .env file so the system can pull data from DataDog, interact with OpenAI's API.
+- You run the script with a "technology" arg (only "PostgreSQL" works right now), and a "goal" (like "improve read performance).
+- The system spits out recommendations along with commands you can run to carry out the recommendations.
 
 
-# Testing
+Near-term enhancements needed:
+- Add more metrics to pull in to give the LLM more context on the behavior of the system.
+- Add support to pull in logs from log management systems
+- Add a way to identify a cluster/instance of a database, message queue, so you can select a specific instance or deployment of the infrastructure to get suggestions for.
+- Fine-tune the model using JIRA tickets or forum conversations to give better answers/sugestions
+- Support a lot more technologies like Cassandra, Elasticsearch, Kafka, MongoDB, MySQL, etc.
+- Fix issue where output is cut off before the full list of suggestions has been generated.
+- Add some sort of UI so this isn't a python script and you can manage more systems and get suggestions for multiple systems in one interface
 
-## POSTGRES SETUP
-
-### INSTALL ON UBUNTU
-https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-20-04
-
-### PGBENCH
-https://www.cloudbees.com/blog/tuning-postgresql-with-pgbench
-
-### SETTING UP POSTGRES TO SEND METRIS
-https://www.datadoghq.com/blog/collect-postgresql-data-with-datadog/
-
-
-
-
-  I want you to act as a consultant for a company that is running {technology}.
-
-  They have asked you to help them {optimization_goal}.
-
-  They have provided you with some metrics representing behavior of the system, which you can use to help you make recommendations.
-
-  Here are the relevant metrics, including their average over the last hour, the current value, the standard deviation, and the z-score given the distribution:
-
-  {metric_data}.
-
-  Recommend at least five, and no more than ten concrete actions they can take to improve performance.
-
-  Put the recommendations in list prioritized by likelihood of fixing the issue.
-
-  Structure the response as a list of JSON objects, with each recommendation having the folowing fields:
-
-  Priority: This field should represent the ranking of the recommendation, based on how likely it is to fix the issue.
-  Suggestion: This is a summary of the recommendation, in plain english.
-  Justification: This is a short explanation of why you think this recommendation will fix the issue.
-  Commands: This is a list of commands that the user can execute to implement the recommendation.
+Long-term enhancements
+- Use GPT-4 to improve suggestions, the GPT-3 suggestions are not great, but GPT4 was surprisingly good.
+- Use Langchain or something similar to make an autonomous agent that can carry out recommended changes if given proper system access to make remote calls/execute system changes (there are a lot of questions about how to do this well, not sure LLMs are even the best way to carry it out).
