@@ -6,7 +6,6 @@ parser = argparse.ArgumentParser(description='Get help optimizing your infrastru
 parser.add_argument('--technology', type=str, required=True, help='The technology to use. Currently only PostgreSQL is supported as a value.')
 parser.add_argument('--goal', type=str, required=True, help='The goal to achieve, e.g. "reduce latency".')
 
-# Define dummy function
 def process_request(technology, goal):
   import openai
   import langchain
