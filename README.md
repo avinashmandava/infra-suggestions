@@ -21,8 +21,11 @@ Basic application that quickly gives you suggestions to improve your system perf
 First create a .env file and enter the following variables:
 
 OPENAI_KEY=""
+
 DATADOG_URL=""
+
 DATADOG_API_KEY=""
+
 DATADOG_APP_KEY=""
 
 
