@@ -1,114 +1,20 @@
-Experiment to see how far a bot can go in talking to itself and making decisions.
+# What is this?
 
-Application that makes sense for me is:
-- Integrate with some external system that holds metrics and logs to pull in info about a target system that you want help with
-- Logic to convert that data about the system to a prompt to send to GPT so we get an ordered list of very specific recommendations along with actions to take for those recommendations.
-- Get a response from GPT containing a list of recommendations including, where possible, a command you can carry out on the system.
-- An avenue for users to provide feedback on which of the recommendations they have either tried before, are not possible, or they need more info on.
-
-Put this all in an interface and go.
+Basic application that quickly gives you suggestions to improve your system performance. Only supported system is Postgres right now. Also this is not fully functional, it's just a proof of concept. More to com
+- You add some API keys to the .env file so the system can pull data from DataDog, interact with OpenAI's API.
+- You run the script with a "technology" arg (only "PostgreSQL" works right now), and a "goal" (like "improve read performance).
+- The system spits out recommendations along with commands you can run to carry out the recommendations.
 
 
-POSTGRES SETUP
+Near-term enhancements needed:
+- Add more metrics to pull in to give the LLM more context on the behavior of the system.
+- Add support to pull in logs from log management systems
+- Add a way to identify a cluster/instance of a database, message queue, so you can select a specific instance or deployment of the infrastructure to get suggestions for.
+- Fine-tune the model using JIRA tickets or forum conversations to give better answers/sugestions
+- Support a lot more technologies like Cassandra, Elasticsearch, Kafka, MongoDB, MySQL, etc.
+- Fix issue where output is cut off before the full list of suggestions has been generated.
+- Add some sort of UI so this isn't a python script and you can manage more systems and get suggestions for multiple systems in one interface
 
-INSTALL ON UBUNTU
-https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-20-04
-
-PGBENCH
-https://www.cloudbees.com/blog/tuning-postgresql-with-pgbench
-
-SETTING UP POSTGRES TO SEND METRIS
-https://www.datadoghq.com/blog/collect-postgresql-data-with-datadog/
-
-
-API CALLS FOR DATADOG
-
-WORKS to validate API key for testing:
-curl -X GET "https://api.us5.datadoghq.com/api/v1/validate" -H "Accept: application/json" -H "DD-API-KEY: <DD-API-KEY>"
-
-
-WORKS to get list of all available metrics from "from" seconds ago, not just search query:
-curl -X GET "https://api.us5.datadoghq.com/api/v1/metrics?from=10000" \
--H "Accept: application/json" \
--H "DD-API-KEY: <DD-API-KEY>" \
--H "DD-APPLICATION-KEY: <DD-APPLICATION-KEY>"
-
-
-WORKS to get all metrics available for a given search query:
-curl -X GET "https://api.us5.datadoghq.com/api/v1/search?q=postgresql" \
--H "Accept: application/json" \
--H "DD-API-KEY: <DD-API-KEY>" \
--H "DD-APPLICATION-KEY: <DD-APPLICATION-KEY>"
-
-
-WORKS to query a specific metric to get the time series data:
-curl -X POST "https://api.us5.datadoghq.com/api/v2/query/timeseries" \
--H "Accept: application/json" \
--H "Content-Type: application/json" \
--H "DD-API-KEY: <DD-API-KEY>" \
--H "DD-APPLICATION-KEY: <DD-APPLICATION-KEY>" \
--d @- << EOF
-{
-  "data": {
-    "attributes": {
-      "formulas": [
-        {
-          "formula": "a",
-          "limit": {
-            "count": 10,
-            "order": "desc"
-          }
-        }
-      ],
-      "from": 1679982319000,
-      "interval": 5000,
-      "queries": [
-        {
-          "data_source": "metrics",
-          "query": "avg:system.cpu.user{*}",
-          "name": "a"
-        }
-      ],
-      "to": 1679984319000
-    },
-    "type": "timeseries_request"
-  }
-}
-EOF
-
-WORKS:
-curl -X POST "https://api.us5.datadoghq.com/api/v2/query/timeseries" \
--H "Accept: application/json" \
--H "Content-Type: application/json" \
--H "DD-API-KEY: <DD-API-KEY>" \
--H "DD-APPLICATION-KEY: <DD-APPLICATION-KEY>" \
--d @- << EOF
-{
-  "data": {
-    "attributes": {
-      "formulas": [
-        {
-          "formula": "a",
-          "limit": {
-            "count": 10,
-            "order": "desc"
-          }
-        }
-      ],
-      "from": 1679982319000,
-      "interval": 5000,
-      "queries": [
-        {
-          "data_source": "metrics",
-          "query": "avg:postgresql.rows_returned{*}",
-          "name": "a"
-        }
-      ],
-      "to": 1679984319000
-    },
-    "type": "timeseries_request"
-  }
-}
-EOF
-
-PYTHON CODE
+Long-term enhancements
+- Use GPT-4 to improve suggestions, the GPT-3 suggestions are not great, but GPT4 was surprisingly good.
+- Use Langchain or something similar to make an autonomous agent that can carry out recommended changes if given proper system access to make remote calls/execute system changes (there are a lot of questions about how to do this well, not sure LLMs are even the best way to carry it out).
