@@ -25,7 +25,7 @@ def process_request(technology, goal):
 
   # Basic use case - calling LLM on some input
   from langchain.llms import OpenAI
-  llm = OpenAI(model_name="text-davinci-003", temperature=1)
+  llm = OpenAI(model_name="text-davinci-003", temperature=1, max_tokens=1000)
   prompt = prompt_generator.construct_prompt(technology, goal, metric_data)
   response = llm(prompt)
   return response
